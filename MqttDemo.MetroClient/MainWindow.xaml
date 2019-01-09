@@ -1,0 +1,85 @@
+﻿<Controls:MetroWindow x:Class="MqttDemo.MetroClient.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      Title="MQTTClient"
+                      Height="480"
+                      Width="800">
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button x:Name="btnSub" Click="btnSub_Click">订阅</Button>
+            <Button x:Name="btnLogin" Click="btnLogin_Click">设置</Button>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
+    <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl>
+            <Controls:Flyout x:Name="flySub" AnimateOpacity="True" CloseButtonIsCancel="True" IsModal="True" Theme="Light" Position="Right" Header="订阅主题" Width="300">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="60"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <DataGrid Grid.Row="0" x:Name="dgSub" AutoGenerateColumns="False" ItemsSource="{Binding Path=AllTopics,Mode=TwoWay}" CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <!--<DataGridTemplateColumn Width="1*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <CheckBox IsChecked="{Binding IsSelected}"></CheckBox>
+                                        </WrapPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>-->
+                            <DataGridCheckBoxColumn Binding="{Binding IsSelected}" Width="1*"></DataGridCheckBoxColumn>
+                            <DataGridTextColumn Binding="{Binding Topic}" Header="主题" Width="2*"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Describe}" Header="描述" Width="2*"></DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <WrapPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Button x:Name="btnSave" Click="btnSave_Click">保存</Button>
+                    </WrapPanel>
+                </Grid>
+            </Controls:Flyout>
+            <Controls:Flyout x:Name="flyLogin" AnimateOpacity="True" CloseButtonIsCancel="True" IsModal="True" Theme="Light" Position="Right" Header="安全凭证" Width="300">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60"></RowDefinition>
+                        <RowDefinition Height="60"></RowDefinition>
+                        <RowDefinition Height="60"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBox Grid.Row="0" Text="{Binding UserName}" Width="240" Height="35" Controls:TextBoxHelper.AutoWatermark="True" Controls:TextBoxHelper.Watermark="用户名"></TextBox>
+                    <TextBox Grid.Row="1" Text="{Binding Password}" Width="240" Height="35" Controls:TextBoxHelper.AutoWatermark="True" Controls:TextBoxHelper.Watermark="密码"></TextBox>
+                    <Button Grid.Row="2" Width="90" Height="30" x:Name="btnSaveConfig" Click="btnSaveConfig_Click">保存</Button>
+                </Grid>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="TextBox">
+                <Setter Property="TextAlignment" Value="Center"></Setter>
+            </Style>
+            <Style TargetType="TextBlock">
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="60"></RowDefinition>
+        </Grid.RowDefinitions>
+        <WrapPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBox Width="200" Text="{Binding ServerUri}" Controls:TextBoxHelper.Watermark="IP"></TextBox>
+            <TextBox Width="80" Text="{Binding ServerPort}" Controls:TextBoxHelper.Watermark="Port" Margin="5,0,0,0"></TextBox>
+            <Button x:Name="btnStart" Click="btnStart_Click" IsEnabled="{Binding IsDisConnected}" Margin="10,0">连接</Button>
+            <Button x:Name="btnStop" Click="btnStop_Click" IsEnabled="{Binding IsConnected}">断开</Button>
+        </WrapPanel>
+        <RichTextBox x:Name="txtRich" Grid.Row="1" Margin="10"></RichTextBox>
+        <WrapPanel Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <ComboBox x:Name="comboTopics" ItemsSource="{Binding Path=AllTopics,Mode=TwoWay}" DisplayMemberPath="Topic" SelectedValuePath="Topic" Width="120"></ComboBox>
+            <TextBox x:Name="txtContent" Width="240" Margin="10,0"></TextBox>
+            <Button x:Name="btnPublish" Click="btnPublish_Click">发布</Button>
+        </WrapPanel>
+    </Grid>
+</Controls:MetroWindow>

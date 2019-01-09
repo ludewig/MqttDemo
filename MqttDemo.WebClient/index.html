@@ -1,0 +1,299 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+	<meta charset="utf-8" />
+    <script src="Scripts/jquery.min.js"></script>
+    <script src="Scripts/paho-mqtt.js"></script>
+    <script type="text/javascript">
+        //所有主题
+        var allTopics = [
+            { "Topic": "/data/alarm", "Describe": "报警" },
+            { "Topic": "/data/message", "Describe": "消息" },
+            { "Topic": "/data/notify", "Describe": "通知" }
+        ];
+
+        //选中订阅主题
+        var selectedTopics = [];
+
+        //选中发布主题
+        var currentTopic;
+
+        //客户端选项
+        var option = {
+            "ServerUri": "127.0.0.1",
+            "ServerPort": 61623,
+            "UserName": "admin",
+            "Password": "password",
+            "ClientId": "",
+            "TimeOut": 5,
+            "KeepAlive": 100,
+            "CleanSession": false,
+            "SSL":false
+        }
+
+        //客户端
+        var client;
+
+        $(function () {
+            BindSubTopics(allTopics);
+            BindPubTopics(allTopics);
+
+            //订阅主题选中事件
+            $("#subTopics input[type=checkbox]").on("click", function () {
+                var t = $(this).val();
+                var topic;
+                for(var i in allTopics){
+                    var tmp = allTopics[i];
+                    if (tmp.Topic == t) {
+                        topic = tmp;
+                    }
+                }
+
+                if ($(this).is(":checked")) {//选中
+                    selectedTopics.push(topic);
+                }
+                else {//取消选择
+                    if(selectedTopics.length>0){
+                        for(var i in selectedTopics){
+                            var tmp = selectedTopics[i];
+                            if (tmp.Topic == t) {
+                                selectedTopics.splice(i, 1);
+                            }
+                        }
+                    }
+                }
+
+            });
+
+            //发布主题选中事件
+            $("#pubTopics").on("change", function () {
+                var d = $("#pubTopics option:selected").text();
+                var t = $("#pubTopics").val();
+                currentTopic = { "Topic": t, "Describe": d }
+                console.log(currentTopic);
+            });
+
+            //连接按钮点击事件
+            $("#btnConnect").on("click", function () {
+                if ($("#txtIp").val()!="") {
+                    option.ServerUri = $("#txtIp").val();
+                }
+                else {
+                    alert("请输入服务端IP!");
+                    return;
+                }
+
+                if($("#txtPort").val()!=""){
+                    option.ServerPort = Number($("#txtPort").val());
+                }
+                else {
+                    alert("请输入端口号!");
+                    return;
+                }
+
+                option.ClientId = guid();
+
+                client = new Paho.Client(option.ServerUri, option.ServerPort, option.ClientId)
+
+                client.onConnectionLost = onConnectionLost;
+                client.onMessageArrived = onMessageArrived;
+
+                client.connect({
+                    invocationContext: {
+                        host: option.ServerUri,//IP地址
+                        port: option.ServerPort,//端口号
+                        path: client.path,
+                        clientId: option.ClientId//标识
+                    },
+                    timeout: option.TimeOut,//连接超时时间
+                    keepAliveInterval: option.KeepAlive,//心跳间隔
+                    cleanSession: option.CleanSession,//是否清理Session
+                    useSSL: option.SSL,//是否启用SSL
+                    userName: option.UserName,  //用户名
+                    password: option.Password,  //密码
+                    onSuccess: onConnect,//连接成功回调事件
+                    onFailure: onError//连接失败回调事件
+                });
+
+            });
+
+            //断开按钮点击事件
+            $("#btnDisconnect").on("click", function () {
+                client = null;
+
+                enable($("#btnConnect"), true);
+                enable($("#btnDisconnect"), false);
+                enable($("#btnPublish"), false);
+                enable($("#btnSubscribe"), false);
+            });
+
+            //订阅按钮点击事件
+            $("#btnSubscribe").on("click", function () {
+                if (!client) {
+                    alert("请连接服务端");
+                    return;
+                }
+                if(selectedTopics.length==0){
+                    alert("请选择要订阅的主题!");
+                    return;
+                }
+
+                var msg = "";
+                for(var i in selectedTopics){
+                    var t = selectedTopics[i];
+                    client.subscribe(t.Topic);
+                    msg+=t.Topic+";"
+                }
+                WriteToStatus("成功订阅主题：" + msg);
+            });
+
+            //发布按钮点击事件
+            $("#btnPublish").on("click", function () {
+                if(!client){
+                    alert("请连接服务端");
+                    return;
+                }
+                if (!currentTopic) {
+                    alert("请选择要发布的主题!");
+                    return;
+                }
+                if($("#txtContent").val()==""){
+                    alert("请输入要发布的内容");
+                    return;
+                }
+
+                var message = new Paho.Message($("#txtContent").val());
+                message.destinationName = currentTopic.Topic;
+                client.send(message);
+
+                WriteToStatus("发布了主题为" + currentTopic.Topic + "的消息：" + $("#txtContent").val())
+            });
+
+
+        });
+
+        //连接成功事件
+        function onConnect() {
+            WriteToStatus("连接成功！")
+
+            enable($("#btnConnect"), false);
+            enable($("#btnDisconnect"), true);
+            enable($("#btnPublish"), true);
+            enable($("#btnSubscribe"), true);
+        }
+        //连接失败事件
+        function onError(e) {
+            WriteToStatus("连接失败：" + e)
+
+            enable($("#btnConnect"), true);
+            enable($("#btnDisconnect"), false);
+            enable($("#btnPublish"), false);
+            enable($("#btnSubscribe"), false);
+        }
+        //连接断开事件
+        function onConnectionLost(e) {
+            if (e.errorCode !== 0) {
+                WriteToStatus("连接异常断开:" + e.errorMessage);
+
+                enable($("#btnConnect"), true);
+                enable($("#btnDisconnect"), false);
+                enable($("#btnPublish"), false);
+                enable($("#btnSubscribe"), false);
+            }
+        }
+        //接收消息事件
+        function onMessageArrived(data) {
+            WriteToStatus("收到消息：" + data.payloadString);
+        }
+
+        //绑定订阅主题
+        function BindSubTopics(topics) {
+            var html = "";
+            for (var i = 0; i < topics.length;i++){
+                var topic = topics[i];
+                html += topic.Describe;
+                html += '<input type="checkbox" value="'+topic.Topic+'"/>';
+            }
+            $("#subTopics").html(html);
+        }
+
+        //绑定发布主题
+        function BindPubTopics(topics) {
+            var html = "";
+            for (var i = 0; i < topics.length; i++) {
+                var topic = topics[i];
+                html += '<option value="' + topic.Topic + '">' + topic.Describe + '</option>';
+            }
+            $("#pubTopics").html(html);
+        }
+
+        //状态输出
+        function WriteToStatus(data) {
+            var now = new Date();
+            var message = '[' + now.toLocaleTimeString() + ']' + data;
+            console.log(message);
+            $("#logResult").append('<li>' + message + '</li>');
+        }
+
+        //生成GUID
+        function guid() {
+            function S4() {
+                return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+            }
+            return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+        }
+
+        //切换按钮状态
+        function enable(button,enabled) {
+            if (enabled) {
+                button.removeAttr("disabled");
+            }
+            else {
+
+                button.attr("disabled", "disabled");
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <table>
+        <tr>
+            <td></td>
+            <td><input id="txtIp" type="text" value="127.0.0.1"/></td>
+            <td><input id="txtPort" type="text" value="61623"/></td>
+            <td><input id="btnConnect" type="button" value="连接"/></td>
+            <td><input id="btnDisconnect" type="button" value="断开" disabled="disabled"/></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan="3">
+                <div id="subTopics">
+                </div>
+            </td>
+            <td><input id="btnSubscribe" type="button" value="订阅" disabled="disabled"/></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan="4">
+                <ul id="logResult"></ul>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <select id="pubTopics">
+                </select>
+            </td>
+            <td colspan="2"><input id="txtContent" type="text"/></td>
+            <td><input id="btnPublish" type="button" value="发布" disabled="disabled"/></td>
+            <td></td>
+        </tr>
+    </table>
+</body>
+</html>

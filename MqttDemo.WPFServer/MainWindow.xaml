@@ -1,0 +1,113 @@
+﻿<metro:MetroWindow x:Class="MqttDemo.WPFServer.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                      Title="MainWindow"
+                      Height="480"
+                      Width="800">
+    <metro:MetroWindow.RightWindowCommands>
+        <metro:WindowCommands>
+            <Button x:Name="btnConfig" Click="btnConfig_Click">配置</Button>
+        </metro:WindowCommands>
+    </metro:MetroWindow.RightWindowCommands>
+    <metro:MetroWindow.Flyouts>
+        <metro:FlyoutsControl>
+            <metro:Flyout x:Name="flyConfig" AnimateOpacity="True" CloseButtonIsCancel="True" IsModal="True" Theme="Light" Position="Right" Header="订阅主题" Width="300">
+                <Grid Margin="10">
+                    <Grid.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                            <Setter Property="HorizontalAlignment"  Value="Right"></Setter>
+                        </Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                            <Setter Property="HorizontalAlignment"  Value="Center"></Setter>
+                            <Setter Property="Height" Value="30"></Setter>
+                            <Setter Property="Width" Value="100"></Setter>
+                            <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                        <ColumnDefinition Width="3*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0">绑定IP地址</TextBlock>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=HostIP,Mode=TwoWay}"></TextBox>
+                    <TextBlock Grid.Row="1" Grid.Column="0">绑定端口号</TextBlock>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=HostPort,Mode=TwoWay}"></TextBox>
+                    <TextBlock Grid.Row="2" Grid.Column="0">连接超时时间</TextBlock>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=Timeout,Mode=TwoWay}"></TextBox>
+                    <TextBlock Grid.Row="3" Grid.Column="0">用户名设置</TextBlock>
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=UserName,Mode=TwoWay}"></TextBox>
+                    <TextBlock Grid.Row="4" Grid.Column="0">密码设置</TextBlock>
+                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Path=Password,Mode=TwoWay}"></TextBox>
+                </Grid>
+            </metro:Flyout>
+        </metro:FlyoutsControl>
+    </metro:MetroWindow.Flyouts>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <WrapPanel Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Button x:Name="btnStart" Click="btnStart_Click">启动</Button>
+            <Button x:Name="btnStop" Click="btnStop_Click" Margin="10,0,0,0">停止</Button>
+        </WrapPanel>
+        <GroupBox Grid.Row="1" Grid.Column="0" Header="Client" Margin="5">
+            <ListBox ItemsSource="{Binding Path=AllClients,Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Label Content="{Binding}"></Label>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Grid.Column="1" Header="Topic" Margin="0,5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                </Grid.RowDefinitions>
+                <DataGrid ItemsSource="{Binding Path=AllTopics,Mode=TwoWay}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="*" Header="Name" Binding="{Binding Topic}"></DataGridTextColumn>
+                        <DataGridTextColumn Width="*" Header="Level" Binding="{Binding QualityOfServiceLevel}"></DataGridTextColumn>
+                        <DataGridTextColumn Width="*" Header="Count" Binding="{Binding Count}"></DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <WrapPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBox Width="150" Text="{Binding Path=AddTopic,Mode=TwoWay}"></TextBox>
+                    <Button x:Name="btnAddTopic" Click="btnAddTopic_Click" Margin="10,0,0,0">添加主题</Button>
+                </WrapPanel>
+            </Grid>
+
+        </GroupBox>
+        <GroupBox Grid.Row="1" Grid.Column="2" Header="Log" Margin="5">
+            <RichTextBox x:Name="txtRich" ToolTip="右键清理内容">
+                <RichTextBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem x:Name="menuClear" Click="menuClear_Click" Header="清空内容"></MenuItem>
+                    </ContextMenu>
+                </RichTextBox.ContextMenu>
+            </RichTextBox>
+        </GroupBox>
+    </Grid>
+</metro:MetroWindow>
