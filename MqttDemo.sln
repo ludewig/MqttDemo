@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MqttDemo.Server", "MqttDemo.Server\MqttDemo.Server.csproj", "{231D5BBC-FC9C-4D03-BA05-22EBE59F6DB3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MqttDemo.Client", "MqttDemo.Client\MqttDemo.Client.csproj", "{2182D350-2E2B-4683-A98E-92F4CA390CE0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MqttDemo.MetroClient", "MqttDemo.MetroClient\MqttDemo.MetroClient.csproj", "{0F56EDA9-CF7F-4C49-A67B-3FCD434D4902}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MqttDemo.WebClient", "MqttDemo.WebClient\MqttDemo.WebClient.csproj", "{C134C495-6CF6-4543-8851-F3C304EA38C8}"
@@ -19,14 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{231D5BBC-FC9C-4D03-BA05-22EBE59F6DB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{231D5BBC-FC9C-4D03-BA05-22EBE59F6DB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{231D5BBC-FC9C-4D03-BA05-22EBE59F6DB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{231D5BBC-FC9C-4D03-BA05-22EBE59F6DB3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2182D350-2E2B-4683-A98E-92F4CA390CE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2182D350-2E2B-4683-A98E-92F4CA390CE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2182D350-2E2B-4683-A98E-92F4CA390CE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2182D350-2E2B-4683-A98E-92F4CA390CE0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0F56EDA9-CF7F-4C49-A67B-3FCD434D4902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0F56EDA9-CF7F-4C49-A67B-3FCD434D4902}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F56EDA9-CF7F-4C49-A67B-3FCD434D4902}.Release|Any CPU.ActiveCfg = Release|Any CPU
