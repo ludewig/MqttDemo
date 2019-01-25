@@ -81,26 +81,32 @@ namespace MqttDemo.ApiServer
             //app.UseMqttEndpoint("/data");
             app.UseMqttServer(server =>
             {
-                //server.Started += async (sender, args) =>
-                //{
-                //    var msg = new MqttApplicationMessageBuilder().WithPayload("").WithTopic("/start");
-                //    while (true)
-                //    {
-                //        try
-                //        {
-                //            await server.PublishAsync(msg.Build());
-                //            msg.WithPayload("");
-                //        }
-                //        catch (Exception e)
-                //        {
-                //            Console.WriteLine(e);
-                //        }
-                //        finally
-                //        {
-                //            await Task.Delay(TimeSpan.FromSeconds(5));
-                //        }
-                //    }
-                //};
+                //服务启动事件
+                server.Started += async (sender, args) =>
+                {
+                    var msg = new MqttApplicationMessageBuilder().WithPayload("").WithTopic("/start");
+                    while (true)
+                    {
+                        try
+                        {
+                            await server.PublishAsync(msg.Build());
+                            msg.WithPayload("");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
+                        finally
+                        {
+                            await Task.Delay(TimeSpan.FromSeconds(5));
+                        }
+                    }
+                };
+                //服务停止事件
+                server.Stopped += (sender, args) =>
+                {
+
+                };
 
                 //客户端连接事件
                 server.ClientConnected += (sender, args) =>
