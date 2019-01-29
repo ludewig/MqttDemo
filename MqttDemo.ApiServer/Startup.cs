@@ -52,8 +52,6 @@ namespace MqttDemo.ApiServer
                 });
             var option = optionBuilder.Build();
 
-            var mqttOptions = new MqttServerOptionsBuilder().WithoutDefaultEndpoint().Build();
-
             services
                 .AddHostedMqttServer(option)
                 .AddMqttConnectionHandler()
@@ -73,24 +71,24 @@ namespace MqttDemo.ApiServer
             app.UseMvc();
 
 
-            app.UseConnections(c => c.MapConnectionHandler<MqttConnectionHandler>("/mqtt", options =>
+            app.UseConnections(c => c.MapConnectionHandler<MqttConnectionHandler>("/data", options =>
             {
                 options.WebSockets.SubProtocolSelector = MQTTnet.AspNetCore.ApplicationBuilderExtensions.SelectSubProtocol;
             }));
 
-            //app.UseMqttEndpoint("/data");
+            app.UseMqttEndpoint("/data");
             app.UseMqttServer(server =>
             {
                 //服务启动事件
                 server.Started += async (sender, args) =>
                 {
-                    var msg = new MqttApplicationMessageBuilder().WithPayload("").WithTopic("/start");
+                    var msg = new MqttApplicationMessageBuilder().WithPayload("welcome to mqtt").WithTopic("start");
                     while (true)
                     {
                         try
                         {
                             await server.PublishAsync(msg.Build());
-                            msg.WithPayload("");
+                            msg.WithPayload("you are welcome to mqtt");
                         }
                         catch (Exception e)
                         {
@@ -123,7 +121,7 @@ namespace MqttDemo.ApiServer
 
             //app.Use((context, next) =>
             //{
-            //    if (context.Request.Path=="/")
+            //    if (context.Request.Path == "/")
             //    {
             //        context.Request.Path = "/Index.html";
             //    }
@@ -137,6 +135,8 @@ namespace MqttDemo.ApiServer
             //    RequestPath="",
             //    FileProvider=new PhysicalFileProvider(System.IO.Path.Combine(env.ContentRootPath,"node_modules"))
             //});
+
+            Controllers.ServiceLocator.Instance = app.ApplicationServices;
         }
 
     }

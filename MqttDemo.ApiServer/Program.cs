@@ -16,15 +16,24 @@ namespace MqttDemo.ApiServer
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
+            //WebHost
+            //    .CreateDefaultBuilder(args)
+            //    .UseKestrel()
+            //    .UseStartup<Startup>()
+            //    .Build()
+            //    .Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseKestrel(o =>
                 {
-                    o.ListenAnyIP(1883, m => m.UseMqtt());
-                    o.ListenAnyIP(5000);
+                    
+                    //o.ListenAnyIP(61613, m => m.UseMqtt());
+                    //o.ListenAnyIP(5000);
                 })
                 .UseStartup<Startup>();
+
+
     }
 }
