@@ -5,3 +5,7 @@
 #### MqttDemo.WebClient：JavaScript客户端
 #### MqttDemo.WPFServer：WPF代理服务端
 #### mqttdemo.vueclient：vue客户端
+
+
+### 2019-1-25 第二次发布
+#### MqttDemo.ApiServer：ASP.NET Core 服务端
