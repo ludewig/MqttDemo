@@ -28,8 +28,7 @@ namespace MqttDemo.ApiServer
             WebHost.CreateDefaultBuilder(args)
                 .UseKestrel(o =>
                 {
-                    
-                    //o.ListenAnyIP(61613, m => m.UseMqtt());
+                    o.ListenAnyIP(61613, m => m.UseMqtt());
                     //o.ListenAnyIP(5000);
                 })
                 .UseStartup<Startup>();
